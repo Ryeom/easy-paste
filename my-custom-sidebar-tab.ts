@@ -1,9 +1,10 @@
 import MyPlugin from "my-plugin";
-import { ItemView, Notice, MarkdownView, TFile } from "obsidian";
+import { MarkdownView, ItemView, Notice, TFile } from "obsidian";
 
 export default class MyCustomSidebarTab extends ItemView {
     private plugin: MyPlugin;
     private lastActiveFile: TFile | null = null;
+    private lastActiveMarkdownView: MarkdownView | null = null;
 
     constructor(leaf: any, plugin: MyPlugin) {
         super(leaf);
@@ -19,9 +20,25 @@ export default class MyCustomSidebarTab extends ItemView {
             this.refreshItems();
         });
 
+        this.app.workspace.on("file-open", (file) => {
+            if (file instanceof TFile) {
+                console.log("File Opened:", file.path);
+                this.lastActiveFile = file;
+            }
+        });
         this.updateLastActiveFile();
     }
 
+    // 활성 Markdown 뷰를 추적하는 메서드
+    updateLastActiveMarkdownView(): void {
+        const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (activeView) {
+            this.lastActiveMarkdownView = activeView;
+            console.log("Last active MarkdownView updated:", activeView.file?.path);
+        } else {
+            console.log("No active MarkdownView found.");
+        }
+    }
     getViewType(): string {
         return "my-custom-sidebar-tab";
     }
@@ -41,13 +58,18 @@ export default class MyCustomSidebarTab extends ItemView {
     }
 
     updateLastActiveFile(): void {
-        const activeLeaf = this.app.workspace.activeLeaf;
-        const activeFile = activeLeaf?.view instanceof MarkdownView ? activeLeaf.view.file : null;
-
+        const activeFile =
+            this.app.workspace.activeLeaf?.view instanceof MarkdownView
+                ? this.app.workspace.activeLeaf.view.file
+                : null;
         if (activeFile) {
+            console.log("Active file updated:", activeFile.path);
             this.lastActiveFile = activeFile;
+        } else {
+            console.log("No active file found.");
         }
     }
+
 
     renderItems(container: HTMLElement) {
         const { dateSets, listItems, colorItems } = this.plugin.settings;
@@ -69,7 +91,7 @@ export default class MyCustomSidebarTab extends ItemView {
         listItems.forEach((item: { title: string; description: string; value: string }) => {
             const value = item.value;
             const tooltip = item.description;
-            this.createItem(container, `${item.title}: ${value}`, value, tooltip);
+            this.createItem(container, `${item.title} ${value}`, value, tooltip);
         });
 
         colorItems.forEach((colorItem: { color: string; title: string; description: string }) => {
@@ -122,16 +144,20 @@ export default class MyCustomSidebarTab extends ItemView {
     }
 
     refreshItems(): void {
-        const container = this.containerEl.children[1] as HTMLElement;
-        if (container) {
-            this.renderItems(container);
+        try {
+            const container = this.containerEl.children[1] as HTMLElement;
+            if (container) {
+                this.renderItems(container);
+            }
+        } catch (error) {
+            console.error("Error refreshing sidebar items:", error);
         }
     }
-
     createItem(container: HTMLElement, title: string, value: string, tooltip: string) {
-        if (title === '' || value === '') {  // createDisplayTextForDate에서 빈 string 전달
-            return
+        if (title === '' || value === '') {
+            return;
         }
+
         const button = container.createEl("button", { text: title });
         button.className = "sidebar-item";
         button.title = tooltip;
@@ -143,24 +169,24 @@ export default class MyCustomSidebarTab extends ItemView {
         button.style.borderRadius = "0.6em";
         button.style.height = "2.1em";
 
-        // `mousedown` 이벤트 사용으로 버튼 클릭 시 즉시 반응
-        button.addEventListener("mousedown", (event) => {
-            event.preventDefault(); // 포커스 변경 방지
-            const markdownLeaves = this.app.workspace.getLeavesOfType("markdown");
-            const activeFile = this.lastActiveFile; // 마지막 활성 파일 참조
+        button.addEventListener("mousedown", async (event) => {
+            event.preventDefault();
 
-            if (!activeFile || markdownLeaves.length === 0) {
-                new Notice("No active Markdown editor found to insert value.");
-                return;
+            // 1. Check last active Markdown view
+            let markdownView = this.lastActiveMarkdownView;
+
+            // 2. If no last active view, fallback to getActiveViewOfType
+            if (!markdownView) {
+                markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
             }
 
-            const markdownView = markdownLeaves[0].view as MarkdownView;
-
+            // 3. If no valid Markdown view found, notify and return
             if (!markdownView || !markdownView.editor) {
-                new Notice("No active Markdown editor found to insert value.");
+                new Notice("No active Markdown editor found.");
                 return;
             }
 
+            // 4. Insert value at current cursor position
             const cmEditor = markdownView.editor;
             const cursor = cmEditor.getCursor();
 
@@ -172,11 +198,13 @@ export default class MyCustomSidebarTab extends ItemView {
             };
             cmEditor.setCursor(newCursor);
 
+            // 5. Ensure focus remains on editor
             setTimeout(() => {
                 cmEditor.focus();
             }, 0);
         });
     }
+
 
     createColorItem(container: HTMLElement, title: string, value: string, tooltip: string) {
         const button = container.createEl("button", { text: title });
@@ -191,20 +219,13 @@ export default class MyCustomSidebarTab extends ItemView {
 
         button.addEventListener("mousedown", (event) => {
             event.preventDefault();
-            const activeFile = this.lastActiveFile;
 
-            if (!activeFile) {
-                return;
-            }
-
-            const markdownLeaves = this.app.workspace.getLeavesOfType("markdown");
-            if (markdownLeaves.length === 0) {
-                return;
-            }
-
-            const markdownView = markdownLeaves[0].view as MarkdownView;
+            // 마지막 활성 파일 참조
+            const activeLeaf = this.app.workspace.getMostRecentLeaf(); // getMostRecentLeaf()로 활성화된 탭 참조
+            const markdownView = activeLeaf?.view instanceof MarkdownView ? activeLeaf.view : null;
 
             if (!markdownView || !markdownView.editor) {
+                new Notice("No active Markdown editor found to insert value.");
                 return;
             }
 
@@ -224,6 +245,7 @@ export default class MyCustomSidebarTab extends ItemView {
             }, 0);
         });
     }
+
 
     formatDate(format: string, date: Date = new Date()): string {
         return format

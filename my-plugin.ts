@@ -23,6 +23,8 @@ export default class MyPlugin extends Plugin {
 
     constructor(app: App, manifest: PluginManifest) {
         super(app, manifest);
+        this.eventTarget = new EventTarget();
+        this.settings = { dateSets: [], listItems: [], colorItems: [] };
     }
 
     async onload() {
@@ -42,11 +44,15 @@ export default class MyPlugin extends Plugin {
             // this.ensureSidebarTab();
             this.toggleSidebarTab();
         });
+
+        // 활성 Markdown 뷰를 추적하는 이벤트 리스너 추가
         this.app.workspace.on("active-leaf-change", () => {
-            const leaves = this.app.workspace.getLeavesOfType("my-custom-sidebar-tab");
-            if (leaves.length > 0) {
-                const tab = leaves[0].view as MyCustomSidebarTab;
-                tab.refreshItems(); // Refresh Sidebar Tab
+            const customSidebarTab = this.app.workspace
+                .getLeavesOfType("my-custom-sidebar-tab")[0]?.view as MyCustomSidebarTab;
+
+            if (customSidebarTab) {
+                customSidebarTab.updateLastActiveMarkdownView();
+                customSidebarTab.refreshItems(); // 사이드바 업데이트
             }
         });
         // Ensure the sidebar tab is available on load
