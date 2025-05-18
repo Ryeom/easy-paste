@@ -1,7 +1,7 @@
 import { App, Plugin, PluginManifest, EventRef } from "obsidian";
 import MyPluginSettingTab from "./my-plugin-setting-tab";
 import MyCustomSidebarTab from "./my-custom-sidebar-tab";
-
+import ReadingModeController from "./reading-mode-toggle";
 interface MyPluginSettings {
     dateSets: Array<{
         title: string;
@@ -10,25 +10,28 @@ interface MyPluginSettings {
     }>;
     listItems: Array<{ title: string; description: string; value: string }>;
     colorItems: Array<{ color: string; title: string; description: string }>;
+    showReadingModeIcon: boolean;
 }
 const DEFAULT_SETTINGS: MyPluginSettings = {
     dateSets: [],
     listItems: [],
-    colorItems: []
+    colorItems: [],
+    showReadingModeIcon: true
 };
 
 export default class MyPlugin extends Plugin {
     settings: MyPluginSettings;
     private eventTarget: EventTarget;
+    readingModeController!: ReadingModeController;
 
     constructor(app: App, manifest: PluginManifest) {
         super(app, manifest);
         this.eventTarget = new EventTarget();
-        this.settings = { dateSets: [], listItems: [], colorItems: [] };
+        this.settings = { dateSets: [], listItems: [], colorItems: [], showReadingModeIcon: true };
+
     }
 
     async onload() {
-        console.log("Loading My Plugin");
         // Initialize EventTarget for custom events
         this.eventTarget = new EventTarget();
         // 플러그인 설정 페이지 버튼 생성
@@ -57,6 +60,10 @@ export default class MyPlugin extends Plugin {
         });
         // Ensure the sidebar tab is available on load
         await this.ensureSidebarTab();
+
+
+        this.readingModeController = new ReadingModeController(this);
+        this.readingModeController.init();
     }
 
     async loadSettings() {

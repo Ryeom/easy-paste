@@ -1,5 +1,5 @@
 {
-	"name": "my-easy-paste-for-consistent-documentation",
+	"name": "easy-paste",
 	"version": "1.0.0",
 	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
 	"main": "main.js",

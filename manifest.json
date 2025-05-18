@@ -1,6 +1,6 @@
 {
-	"id": "my-easy-paste-for-consistent-documentation",
-	"name": "my-easy-paste-for-consistent-documentation",
+	"id": "easy-paste",
+	"name": "Easy paste",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Demonstrates some of the capabilities of the Obsidian API.",

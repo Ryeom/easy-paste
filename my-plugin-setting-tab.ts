@@ -1,5 +1,6 @@
 import { PluginSettingTab, Setting, Notice } from "obsidian";
-
+import type ReadingModeController from "./reading-mode-toggle";
+import MyPlugin from "my-plugin";
 interface DateSet {
     title: string;
     description: string;
@@ -19,10 +20,14 @@ interface ColorItem {
 }
 
 export default class MyPluginSettingTab extends PluginSettingTab {
-    plugin: { settings: { dateSets: DateSet[]; listItems: ListItem[]; colorItems: ColorItem[] }; saveSettings: () => Promise<void> };
+    plugin: {
+        settings: { dateSets: DateSet[]; listItems: ListItem[]; colorItems: ColorItem[], showReadingModeIcon: boolean };
+        saveSettings: () => Promise<void>;
+        readingModeController: ReadingModeController;
+    };
 
 
-    constructor(app: any, plugin: any) {
+    constructor(app: any, plugin: MyPlugin) {
         super(app, plugin);
         this.plugin = plugin;
     }
@@ -35,6 +40,26 @@ export default class MyPluginSettingTab extends PluginSettingTab {
         this.renderDateSettings(containerEl);
         this.renderDynamicSettings(containerEl);
         this.renderColorSettings(containerEl);
+        new Setting(containerEl)
+            .setName("Show Ribbon Icon")
+            .setDesc("왼쪽 리본에 읽기모드 전환 아이콘을 표시할지 설정합니다.")
+            .addToggle(toggle =>
+                toggle
+                    .setValue(this.plugin.settings.showReadingModeIcon)
+                    .onChange(async (value) => {
+                        this.plugin.settings.showReadingModeIcon = value;
+                        await this.plugin.saveSettings();
+
+                        console.log("설정에서 누른 이닛");
+
+                        // 🔥 강제로 리프레시
+                        if (value) {
+                            this.plugin.readingModeController?.init(); // 아이콘 생성
+                        } else {
+                            this.plugin.readingModeController?.removeReadingModeIcon(); // 아이콘 제거
+                        }
+                    })
+            );
 
         this.addStyles(containerEl);
     }
