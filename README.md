@@ -1,96 +1,107 @@
-# Obsidian Sample Plugin
+# ✨ Easy Paste 
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+Obsidian에 필요한 내용을 단순한 **버튼 클릭**만으로 쉽게 붙여넣을 수 있는 플러그인입니다.  
+반복적인 날짜, 텍스트, 이모지, 색상 등의 정보를 빠르게 입력해 문서화(Documentation)를 더 일관성 있게 만들어줍니다.
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+---
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+## 📌 주요 기능 (Features)
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+- 📅 **날짜 템플릿 삽입 (Date Templates)**
+  - `today`, `file_created_at` 등 다양한 날짜 키워드 지원
+  - 원하는 형식(format) + 접두어(prefix) + 접미어(suffix) 조합
 
-## First time developing plugins?
+- ✍️ **커스텀 텍스트 스니펫 (Text Snippets)**
+  - 자주 쓰는 문구, 이모지 등을 저장하고 클릭 한 번으로 삽입
 
-Quick starting guide for new plugin devs:
+- 🎨 **컬러 값 태그 (Color Tags)**
+  - 색상과 설명이 포함된 버튼 생성 → 클릭하면 색상 코드(`#hex`) 삽입
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+- 🖱️ **Click 또는 키보드 조작 (추후반영)**
+  - 버튼을 클릭하거나, 방향키로 선택하여 붙여넣기
 
-## Releasing new releases
+---
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+## ⚙️ 사용 방법 (How to Use)
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+1. **Settings > My Easy Paste for Consistent Documentation** 이동
+2. `Date`, `List`, `Palette` 탭에서 항목 추가
+3. 우측 사이드바 탭에서 버튼 확인 및 사용
 
-## Adding your plugin to the community plugin list
+- 클릭: 커서 위치에 텍스트 삽입  
+- 드래그: 마크다운 문서 내 원하는 위치로 텍스트 끌어넣기
 
-- Check https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+---
 
-## How to use
+## 🔧 설치 방법 (Installation)
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+### 1. GitHub에서 직접 설치 (Manual Install)
+```bash
+git clone https://github.com/your-repo/my-easy-paste-plugin.git
+cd my-easy-paste-plugin
+npm install
+npm run build
 ```
 
-If you have multiple URLs, you can also do:
+빌드 후 생성된 `main.js`, `manifest.json`, `styles.css`를  
+`YOUR_VAULT/.obsidian/plugins/my-easy-paste-plugin` 폴더에 복사한 뒤  
+**Obsidian > Settings > Community Plugins** 에서 플러그인을 활성화하세요.
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+---
+
+## 📐 날짜 포맷 예시 (Date Format Example)
+
+사용 가능한 포맷 토큰:
+
+| 포맷 | 설명          |
+|------|---------------|
+| `YYYY` | 연도 (e.g. 2025) |
+| `MM`   | 월 (01–12)     |
+| `DD`   | 일 (01–31)     |
+| `hh`   | 시 (00–23)     |
+| `mm`   | 분            |
+| `ss`   | 초            |
+
+예시:
+```
+prefix: 🗓  
+format: YYYY.MM.DD hh:mm:ss  
+suffix: created
+
+→ 🗓 2025.05.19 16:12:45 created
 ```
 
-## API Documentation
+---
 
-See https://github.com/obsidianmd/obsidian-api
+## ✅ 현재 구현된 기능 (Implemented)
+
+- [x] 커스터마이징 가능한 날짜 버튼
+- [x] 텍스트/문장 버튼 추가 및 클릭/삽입
+- [x] 컬러 버튼 생성 및 삽입
+- [x] 커서 위치 자동 인식 후 삽입
+- [x] 드래그 앤 드롭 지원
+- [x] 다크모드 대응 UI
+- [x] `file_created_at` 같은 파일 정보 기반 기능
+
+---
+
+## 🚀 앞으로 구현 예정 (Planned Features)
+
+- [ ] 키보드 방향키로 포커싱 후 paste 
+- [ ] `file_modified_at`, `file_name`, `file_path` 등 추가 메타데이터 지원
+- [ ] 사용자가 버튼 그룹을 만들고 묶을 수 있는 구조
+- [ ] preset 템플릿 import/export 기능
+
+---
+
+## 🙌 크레딧 (Credits)
+
+개발자: [Ryeom]  
+Obsidian API 및 커뮤니티 플러그인 문서 기반으로 개발  
+피드백과 제안은 언제든 환영합니다!
+
+---
+
+## 📄 라이센스 (License)
+
+MIT License
