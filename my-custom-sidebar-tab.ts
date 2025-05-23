@@ -22,7 +22,6 @@ export default class MyCustomSidebarTab extends ItemView {
 
         this.app.workspace.on("file-open", (file) => {
             if (file instanceof TFile) {
-                console.log("File Opened:", file.path);
                 this.lastActiveFile = file;
             }
         });
@@ -34,7 +33,7 @@ export default class MyCustomSidebarTab extends ItemView {
         const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (activeView) {
             this.lastActiveMarkdownView = activeView;
-            console.log("Last active MarkdownView updated:", activeView.file?.path);
+            // console.log("Last active MarkdownView updated:", activeView.file?.path);
         } else {
             console.log("No active MarkdownView found.");
         }
@@ -63,7 +62,7 @@ export default class MyCustomSidebarTab extends ItemView {
                 ? this.app.workspace.activeLeaf.view.file
                 : null;
         if (activeFile) {
-            console.log("Active file updated:", activeFile.path);
+            // console.log("Active file updated:", activeFile.path);
             this.lastActiveFile = activeFile;
         } else {
             console.log("No active file found.");

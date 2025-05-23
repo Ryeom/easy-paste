@@ -29,12 +29,10 @@ const context = await esbuild.context({
 	]
 });
 
-console.log("🧱 esbuild.config.mjs 시작됨");
 
 if (prod) {
 	await context.rebuild();
 	process.exit(0);
 } else {
 	await context.watch();
-	console.log("✅ esbuild.build 실행 완료");
 }

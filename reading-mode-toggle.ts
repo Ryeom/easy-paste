@@ -1,5 +1,6 @@
-import { Plugin, WorkspaceLeaf, setIcon } from "obsidian";
+import { Plugin, WorkspaceLeaf, setIcon, MarkdownView } from "obsidian";
 import type MyPlugin from "./my-plugin";
+
 export enum ReadingModeState {
     DEFAULT = "default",
     FORCE_READ = "read",
@@ -20,32 +21,48 @@ export default class ReadingModeController {
             })
         );
     }
+
     init() {
-        console.log("이닛이다 이것들아 11111")
         if (!(this.plugin as MyPlugin).settings.showReadingModeIcon) {
             this.removeReadingModeIcon();
             return;
         }
-        console.log("이닛이다 이것들아 22222222")
         // 아이콘이 이미 없다면 새로 생성
         if (!this.iconEl) {
             this.iconEl = this.plugin.addRibbonIcon("eye", "Reading Mode Toggle", () => {
                 this.cycleMode();
             });
         }
-
-        console.log("이닛이다 이것들아 33333333333")
         this.updateIcon();
         this.plugin.registerEvent(
             this.plugin.app.workspace.on("file-open", () => {
                 this.applyModeToAllLeaves();
             })
         );
+
+        // 수동 모드 변경 감지
+        this.plugin.registerEvent(
+            this.plugin.app.workspace.on("active-leaf-change", () => {
+                const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+                if (!view) return;
+                const currentMode = view.getMode(); // "source" | "preview"
+                if (this.state !== ReadingModeState.DEFAULT) {
+                    const expected = this.state === ReadingModeState.FORCE_EDIT ? "source" : "preview";
+                    if (currentMode !== expected) {
+                        console.log("업뎃햊지롱 현재모드", currentMode, "익트펙트", expected)
+                        this.state = ReadingModeState.DEFAULT;
+                        this.updateIcon();
+                    }
+                }
+            })
+        );
     }
+
     removeReadingModeIcon() {
         this.iconEl?.remove();
         this.iconEl = null;
     }
+
     /** 모드 변경 순환: default -> read -> edit -> default */
     cycleMode() {
         const order = [
@@ -89,9 +106,7 @@ export default class ReadingModeController {
 
     /** 상태에 따라 아이콘 변경 */
     updateIcon() {
-        console.log("아이콘 업데이트 해따이것들아 1")
         if (!this.iconEl) return;
-        console.log("아이콘 업데이트 해따이것들아 2")
         const iconMap: Record<ReadingModeState, string> = {
             [ReadingModeState.DEFAULT]: "eye",
             [ReadingModeState.FORCE_READ]: "book-open",
@@ -101,7 +116,6 @@ export default class ReadingModeController {
         const iconName = iconMap[this.state];
         setIcon(this.iconEl, iconName);
     }
-
 
     destroy() {
         this.iconEl?.remove();

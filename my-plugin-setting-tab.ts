@@ -49,9 +49,6 @@ export default class MyPluginSettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.showReadingModeIcon = value;
                         await this.plugin.saveSettings();
-
-                        console.log("설정에서 누른 이닛");
-
                         // 🔥 강제로 리프레시
                         if (value) {
                             this.plugin.readingModeController?.init(); // 아이콘 생성
