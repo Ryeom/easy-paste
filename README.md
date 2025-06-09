@@ -37,14 +37,14 @@ Obsidian에 필요한 내용을 단순한 **버튼 클릭**만으로 쉽게 붙�
 
 ### 1. GitHub에서 직접 설치 (Manual Install)
 ```bash
-git clone https://github.com/your-repo/my-easy-paste-plugin.git
-cd my-easy-paste-plugin
+git clone https://github.com/Ryeom/easy-paste.git
+cd easy-paste
 npm install
 npm run build
 ```
 
 빌드 후 생성된 `main.js`, `manifest.json`, `styles.css`를  
-`YOUR_VAULT/.obsidian/plugins/my-easy-paste-plugin` 폴더에 복사한 뒤  
+`YOUR_VAULT/.obsidian/plugins/easy-paste` 폴더에 복사한 뒤  
 **Obsidian > Settings > Community Plugins** 에서 플러그인을 활성화하세요.
 
 ---
