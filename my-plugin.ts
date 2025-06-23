@@ -62,8 +62,8 @@ export default class MyPlugin extends Plugin {
         await this.ensureSidebarTab();
 
 
-        this.readingModeController = new ReadingModeController(this);
-        this.readingModeController.init();
+        // this.readingModeController = new ReadingModeController(this);
+        // this.readingModeController.init();
     }
 
     async loadSettings() {
